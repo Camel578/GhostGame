@@ -27,6 +27,7 @@ public class EnemyAI : MonoBehaviour
 
     void Start()
     {
+
         _agent = GetComponent<NavMeshAgent>();
 
         _ghostScript = FindObjectOfType<GhostScript>();
