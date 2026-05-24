@@ -7,13 +7,15 @@ namespace Sample
     {
         [SerializeField] private Coin[] _coins;
         [SerializeField] private Transform _nextLevelPoint;
+        [SerializeField] private GameObject _winWindow; // Перетащи сюда свое окно победы в инспекторе
+        [SerializeField] private bool _isLastLevel;     // Поставь эту галочку в инспекторе на последнем уровне
 
         private GhostScript _ghostScript;
 
         void Start()
         {
-            // Ищем призрака на сцене
             _ghostScript = FindObjectOfType<GhostScript>();
+            if (_winWindow != null) _winWindow.SetActive(false);
         }
 
         public void AddCoin()
@@ -22,14 +24,25 @@ namespace Sample
 
             if (DataContainer._coins >= _coins.Length)
             {
-                if (_nextLevelPoint != null)
+                if (_isLastLevel)
+                {
+                    ShowWinWindow();
+                }
+                else if (_nextLevelPoint != null)
                 {
                     TeleportPlayer();
                 }
-                else
-                {
-                    Debug.Log("Все монеты собраны, но точка телепортации не задана!");
-                }
+            }
+        }
+
+        private void ShowWinWindow()
+        {
+            if (_winWindow != null)
+            {
+                _winWindow.SetActive(true);
+                Time.timeScale = 0f; // Пауза игры
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
             }
         }
 
@@ -38,17 +51,13 @@ namespace Sample
             if (_ghostScript == null) return;
 
             CharacterController cc = _ghostScript.GetComponent<CharacterController>();
-
-            cc.enabled = false; // Выключаем для перемещения
+            cc.enabled = false;
 
             _ghostScript.transform.position = _nextLevelPoint.position;
             _ghostScript.transform.rotation = _nextLevelPoint.rotation;
-
-            // Метод в GhostScript, который мы добавим ниже
             _ghostScript.SetNewRespawnPoint(_nextLevelPoint);
 
-            DataContainer._coins = 0; // Сброс для новой зоны
-
+            DataContainer._coins = 0;
             cc.enabled = true;
         }
     }
