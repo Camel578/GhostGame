@@ -328,6 +328,21 @@ namespace Sample
 
             // Включаем контроллер обратно
             if (_characterController != null) _characterController.enabled = true;
+
+
+            if (GameDifficultyManager.Instance != null)
+            {
+                GameDifficultyManager.Instance.RegisterDeath();
+            }
+            else
+            {
+                Debug.LogWarning("Игра запущена не из меню, менеджер сложности отсутствует!");
+                // Здесь можно просто перезагрузить текущую сцену для тестов:
+                UnityEngine.SceneManagement.SceneManager.LoadScene(
+                    UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
+                );
+            }
+
         }
 
         //---------------------------------------------------------------------
