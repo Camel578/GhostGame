@@ -47,7 +47,8 @@ public class GameDifficultyManager : MonoBehaviour
     public void GoToMainMenu()
     {
         Time.timeScale = 1f;
-        CurrentDeaths = 0;   // ќЅЌ”Ћя≈ћ счетчик смертей!
+        DataContainer._deaths = 0;
+        DataContainer._coins = 0;
         MaxDeaths = 0;      // —брасываем сложность
         SceneManager.LoadScene(0); // ѕереходим в меню
     }
