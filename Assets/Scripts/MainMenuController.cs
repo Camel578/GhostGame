@@ -22,6 +22,14 @@ public class MainMenuController : MonoBehaviour
 
     public void ExitGame()
     {
+        Debug.Log("Игрок нажали кнопку: ВЫХОД ИЗ ИГРЫ");
+
+        // 1. Эта строчка закроет игру, если она запущена как отдельная программа (.exe)
         Application.Quit();
+
+        // 2. Эта строчка сработает ТОЛЬКО внутри редактора Unity, чтобы ты видел, что кнопка работает
+        #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+        #endif
     }
 }
