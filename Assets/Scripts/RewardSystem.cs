@@ -57,6 +57,19 @@ namespace Sample
             _ghostScript.transform.rotation = _nextLevelPoint.rotation;
             _ghostScript.SetNewRespawnPoint(_nextLevelPoint);
 
+            // 1. ВКЛЮЧАЕМ ЗАМОРОЗКУ ИГРОКА (чтобы не улетал от зажатых кнопок)
+            _ghostScript.FreezeOnNextLevel(0.3f);
+
+            // 2. ОГЛУШАЕМ ВСЕХ НПС НА СЦЕНЕ: находим их и сбрасываем агрессию
+            EnemyAI[] allEnemies = FindObjectsOfType<EnemyAI>();
+            foreach (EnemyAI enemy in allEnemies)
+            {
+                if (enemy != null)
+                {
+                    enemy.ResetEnemyOnTeleport();
+                }
+            }
+
             DataContainer._coins = 0;
             cc.enabled = true;
         }

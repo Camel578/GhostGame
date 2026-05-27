@@ -5,7 +5,7 @@ using Sample;
 public class EnemyAI : MonoBehaviour
 {
     [Header("Настройки после убийства")]
-    [SerializeField] private float _postKillCooldown = 3f; // Сколько секунд НПС «остывает»
+    [SerializeField] private float _postKillCooldown = 1f; // Сколько секунд НПС «остывает»
     private float _cooldownTimer = 0f;
     [Header("Настройки обзора")]
     [SerializeField] private float _viewRadius = 8f;
@@ -162,5 +162,21 @@ public class EnemyAI : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(transform.position + Vector3.up * 0.5f, (transform.position + Vector3.up * 0.5f) + leftBoundary * _viewRadius);
         Gizmos.DrawLine(transform.position + Vector3.up * 0.5f, (transform.position + Vector3.up * 0.5f) + rightBoundary * _viewRadius);
+    }
+
+    // Этот метод вызывается из RewardSystem при телепортации игрока
+    public void ResetEnemyOnTeleport()
+    {
+        _isChasing = false;
+
+        // Включаем таймер остывания (например, на 3 секунды), 
+        // чтобы НПС гарантированно шел по патрулю и игнорировал игрока на старте зоны
+        _cooldownTimer = _postKillCooldown;
+
+        // Принудительно отправляем врага к его точке маршрута подальше от игрока
+        if (_agent != null && _agent.isOnNavMesh)
+        {
+            GoToNextWaypoint();
+        }
     }
 }

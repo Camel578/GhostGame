@@ -23,6 +23,7 @@ namespace Sample
         private float Dissolve_value = 1;
         private bool DissolveFlg = false;
         private const int maxHP = 3;
+        private float _freezeTimer = 0f; // Таймер заморозки
         private bool isDead;
         private Text HP_text;
 
@@ -35,6 +36,14 @@ namespace Sample
             Anim = this.GetComponent<Animator>();
             _characterController = this.GetComponent<CharacterController>();
 
+            if (DataContainer.isLevelWon)
+            {
+                _freezeTimer = 0.8f; // Замораживаем управление на 0.8 секунды
+            }
+            else
+            {
+                _freezeTimer = 0f;   // Если это смерть и респавн — никакой заморозки!
+            }
         }
 
 
@@ -42,6 +51,29 @@ namespace Sample
 
         void Update()
         {
+
+
+            if (_freezeTimer > 0f)
+            {
+                _freezeTimer -= Time.deltaTime; // Отсчитываем время назад
+
+                // ЖЕСТКАЯ БЛОКИРОВКА: Обнуляем скорость движения, чтобы призрак не летел по инерции
+                MoveDirection = Vector3.zero;
+
+                // Принудительно включаем анимацию покоя (idle), чтобы сбросить бег
+                if (Anim != null)
+                {
+                    Anim.CrossFade(IdleState, 0f, 0, 0);
+                }
+
+                // Когда таймер дотикал до нуля, сбрасываем флаг победы
+                if (_freezeTimer <= 0f)
+                {
+                    DataContainer.isLevelWon = false;
+                }
+                return; // Полностью выходим, игнорируя MOVE() и гравитацию на время заморозки
+            }
+
             STATUS();
             GRAVITY();
             if (_invincibilityTimer > 0f)
@@ -393,6 +425,13 @@ namespace Sample
             {
                 Damage(); // Мгновенно убиваем призрака и отправляем на спавн
             }
+        }
+
+
+        // Этот метод мы будем вызывать при телепортации, чтобы заморозить призрака
+        public void FreezeOnNextLevel(float duration)
+        {
+            _freezeTimer = duration;
         }
     }
 }
